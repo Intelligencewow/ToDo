@@ -1,21 +1,40 @@
 package com.example.todo;
 
-public class Task {
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+import java.util.UUID;
+
+
+@Entity(tableName = "task")
+public class Task implements Serializable {
+
+    @PrimaryKey
+    @NonNull
+    private String id;
+
+    @ColumnInfo(name = "description")
     private String tasktext;
-    private boolean completed;
+
+    @ColumnInfo(name = "is_completed")
+    private boolean IsCompleted;
 
     public Task(String tasktext){
+        this.id = UUID.randomUUID().toString();
         this.tasktext = tasktext;
-        this.completed = false;
+        this.IsCompleted = true;
     }
 
-    public boolean getStatus() {
-        return completed;
+    @NonNull
+    public String getId() {
+        return id;
     }
 
-    public void setStatus(boolean completed) {
-        this.completed = completed;
+    public void setId(@NonNull String id) {
+        this.id = id;
     }
 
     public String getTasktext() {
@@ -24,5 +43,13 @@ public class Task {
 
     public void setTasktext(String tasktext) {
         this.tasktext = tasktext;
+    }
+
+    public boolean getIsCompleted() {
+        return IsCompleted;
+    }
+
+    public void setIsCompleted(boolean completed) {
+        IsCompleted = completed;
     }
 }
