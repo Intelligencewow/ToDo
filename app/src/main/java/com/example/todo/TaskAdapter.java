@@ -22,12 +22,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private List<Task> filteredList;
     private Context context;
     private OnItemClickListerner listerner;
+    private int currentfilter;
 
     public TaskAdapter(Context context, List<Task> taskList, OnItemClickListerner listerner) {
         this.taskList = taskList;
         this.filteredList = new ArrayList<>(taskList);
         this.context = context;
         this.listerner = listerner;
+        this.currentfilter = 2;
     }
 
     @NonNull
@@ -39,7 +41,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        Task task = taskList.get(position);
+
+        Task task = filteredList.get(holder.getAdapterPosition());
+        int positionInTaskList = taskList.indexOf(task);
 
         holder.taskTextView.setText(task.getTasktext());
         holder.checkBox.setChecked(false);
@@ -50,51 +54,64 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             holder.taskTextView.setText(spannableString);
         }
 
-        holder.checkBox.setOnClickListener(v -> listerner.onItemClick(holder.getAdapterPosition(), 1));
-        holder.itemView.setOnClickListener(v -> listerner.onItemClick(holder.getAdapterPosition(), 1));
-        holder.deleteTaskButton.setOnClickListener(v -> listerner.onItemClick(holder.getAdapterPosition(), 0));
+
+        holder.checkBox.setOnClickListener(v -> listerner.onItemClick(positionInTaskList, 1));
+        holder.itemView.setOnClickListener(v -> listerner.onItemClick(positionInTaskList, 1));
+        holder.deleteTaskButton.setOnClickListener(v -> listerner.onItemClick(positionInTaskList, 0));
     }
 
     @Override
     public int getItemCount() {
-        return taskList.size();
+        return filteredList.size();
     }
 
     public void setTaskList(List<Task> taskList){
         this.taskList = taskList;
-        notifyDataSetChanged();
+        filter(currentfilter, "");
     }
 
 
-    public void filter(int id) {
+    public void filter(int id, String query) {
+        currentfilter = id;
+        Log.i("Cherozo", "CurrentFilter: " + currentfilter);
+        Log.i("Cherozo", "Tasklistsize: " + taskList.size());
 
         Log.i("Cherozo", "Tamanho da lista: " + filteredList.size());
         filteredList.clear();
         Log.i("Cherozo", "Tamanho da lista: " + filteredList.size());
 
-        /*
+
+        String lowerCaseQuery = query.toLowerCase().trim();
+
+
         for (Task task : taskList) {
 
-            if (id == 0) {
+            boolean matchesStatus = false;
+            boolean matchesQuery = task.getTasktext().toLowerCase().contains(lowerCaseQuery);
 
+            if (id == 0) {
                 if (!task.getIsCompleted()) {
                     Log.i("Cherozo", "Task: " + task.getTasktext() + " " + task.getIsCompleted());
-                    filteredList.add(task);
+                    matchesStatus = true;
                 }
 
             } else if (id == 1) {
                 if (task.getIsCompleted()) {
                     Log.i("Cherozo", "Task: " + task.getTasktext() + " " + task.getIsCompleted());
-                    filteredList.add(task);
+                    matchesStatus = true;
                 }
 
             } else {
                 Log.i("Cherozo", "Task: " + task.getTasktext() + " " + task.getIsCompleted());
+                matchesStatus = true;
+            }
+
+
+            if (matchesStatus && matchesQuery){
                 filteredList.add(task);
             }
         }
         notifyDataSetChanged();
-        */
     }
 
     @Override

@@ -26,8 +26,13 @@
         app:startIconDrawable="@drawable/search_24dp_e8eaed_fill0_wght400_grad0_opsz24">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etFilter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSend"
+            android:maxLines="1"
+            android:inputType="text"/>
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.chip.ChipGroup

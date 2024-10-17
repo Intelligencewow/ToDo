@@ -1,9 +1,12 @@
 package com.example.todo;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +31,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements TaskAdapter.OnItemClickListerner {
 
     private List<Task> taskList = new ArrayList<>();
-    private TaskAdapter taskAdapter;
-    private RecyclerView recyclerView;
     TaskViewModel taskViewModel;
-    private EditText editText;
-    private FloatingActionButton fab;
+    private int currentFilter = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TaskAdapter taskAdapter;
+        EditText editText;
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -43,19 +46,23 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.purple));
-        }
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.purple));
+
 
         ChipGroup chipGroup = findViewById(R.id.chipGroup);
-
-        fab = findViewById(R.id.createTask);
+        TextInputLayout inputLayout = findViewById(R.id.textInputLayout);
+        FloatingActionButton fab = findViewById(R.id.createTask);
         editText = findViewById(R.id.etTask);
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        EditText etFilter = findViewById(R.id.etFilter);
 
         taskAdapter = new TaskAdapter(this, taskList, this);
         recyclerView.setAdapter(taskAdapter);
+
+
+
+
 
         taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
         taskViewModel.getTaskList().observe(this, tasks -> {
@@ -64,15 +71,36 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
             Log.d("MainActivity", "Total de produtos: " + tasks.size());
         });
 
+        inputLayout.setStartIconOnClickListener(v -> {
+            String text = etFilter.getText().toString().trim();
+            if (!text.isEmpty()){
+                taskAdapter.filter(currentFilter, text);
+                etFilter.setText("");
+            }
+            hideKeyboad(v);
+        });
+
+        etFilter.setOnEditorActionListener((v, actionId, event) -> {
+            String text = etFilter.getText().toString().trim();
+            if (!text.isEmpty()){
+                taskAdapter.filter(currentFilter, text);
+                etFilter.setText("");
+                hideKeyboad(v);
+                return true;
+            }
+            hideKeyboad(v);
+            return false;
+        });
+
         fab.setOnClickListener(v -> {
             String text = editText.getText().toString().trim();
             if (!text.isEmpty()) {
                 taskViewModel.insertTask(new Task(text));
-                taskAdapter.notifyItemInserted(taskList.size() - 1);
+                taskAdapter.filter(currentFilter, "");
                 editText.setText("");
-                //Toast.makeText(this, "Tarefa adicionada !!!", Toast.LENGTH_SHORT).show();
+                hideKeyboad(v);
+                Toast.makeText(this, "Tarefa adicionada !!!", Toast.LENGTH_SHORT).show();
             }
-            //Toast.makeText(this, "Você tentou adicionar uma tarefa vazia", Toast.LENGTH_SHORT).show();
         });
 
         editText.setOnEditorActionListener((v, actionId, event) -> {
@@ -80,12 +108,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
                 String text = editText.getText().toString().trim();
                 if (!text.isEmpty()) {
                     taskViewModel.insertTask(new Task(text));
-                    taskAdapter.notifyItemInserted(taskList.size() - 1);
+                    taskAdapter.filter(currentFilter, "");
                     editText.setText("");
+                    hideKeyboad(v);
                     Toast.makeText(this, "Tarefa adicionada !!!", Toast.LENGTH_SHORT).show();
                     return true;
                 }
-                Toast.makeText(this, "Você tentou adicionar uma tarefa vazia", Toast.LENGTH_SHORT).show();
 
             }
             return false;
@@ -96,14 +124,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
             Chip selectedChip = findViewById(selectedChipId);
 
             if (selectedChip.getText().equals("In progress")) {
-                taskAdapter.filter(0);
+                currentFilter = 0;
+                taskAdapter.filter(currentFilter, "");
 
             } else if (selectedChip.getText().equals("Done")) {
-                taskAdapter.filter(1);
+                currentFilter = 1;
+                taskAdapter.filter(currentFilter, "");
             } else {
-                taskAdapter.filter(2);
+                currentFilter = 2;
+                taskAdapter.filter(currentFilter, "");
             }
-            Toast.makeText(this, "Selecionado: " + selectedChip.getText(), Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -114,13 +144,20 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
         if (action == 1) {
 
             task.setIsCompleted(!task.getIsCompleted());
-            Toast.makeText(this, "Cliquei no : " + task.getTasktext(), Toast.LENGTH_SHORT).show();
-            taskAdapter.notifyItemChanged(position);
+            taskViewModel.updateTask(task);
 
         } else {
-            Toast.makeText(this,"ERA PRA DELETAR", Toast.LENGTH_SHORT).show();
-            taskAdapter.notifyItemRemoved(position);
+            Toast.makeText(this, "Tarefa removida com sucesso!" , Toast.LENGTH_SHORT).show();
             taskViewModel.deleteTask(task);
         }
+
+        }
+
+    public void hideKeyboad(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
-}
+
+    }

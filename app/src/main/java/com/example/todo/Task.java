@@ -17,15 +17,19 @@ public class Task implements Serializable {
     private String id;
 
     @ColumnInfo(name = "description")
-    private String tasktext;
+    private final String tasktext;
 
     @ColumnInfo(name = "is_completed")
-    private boolean IsCompleted;
+    private boolean isCompleted;
+
+    @ColumnInfo(name = "time_stamp")
+    private long timeStamp;
 
     public Task(String tasktext){
         this.id = UUID.randomUUID().toString();
         this.tasktext = tasktext;
-        this.IsCompleted = true;
+        this.isCompleted = false;
+        this.timeStamp = System.currentTimeMillis();
     }
 
     @NonNull
@@ -41,15 +45,19 @@ public class Task implements Serializable {
         return tasktext;
     }
 
-    public void setTasktext(String tasktext) {
-        this.tasktext = tasktext;
-    }
-
     public boolean getIsCompleted() {
-        return IsCompleted;
+        return isCompleted;
     }
 
     public void setIsCompleted(boolean completed) {
-        IsCompleted = completed;
+        isCompleted = completed;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

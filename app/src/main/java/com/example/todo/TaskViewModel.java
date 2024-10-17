@@ -24,6 +24,8 @@ public class TaskViewModel extends AndroidViewModel {
         taskRepository.insertTask(task);
     }
 
+    public void updateTask(Task task) {taskRepository.updateTask(task);}
+
     public void deleteTask(Task task){
         taskRepository.deleteTask(task);
     }
@@ -31,4 +33,5 @@ public class TaskViewModel extends AndroidViewModel {
     public LiveData<List<Task>> getTaskList() {
         return taskList;
     }
+
 }
