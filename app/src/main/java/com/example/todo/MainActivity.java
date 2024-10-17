@@ -2,6 +2,7 @@ package com.example.todo;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -60,12 +61,13 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
         taskViewModel.getTaskList().observe(this, tasks -> {
             taskList = tasks;
             taskAdapter.setTaskList(tasks);
+            Log.d("MainActivity", "Total de produtos: " + tasks.size());
         });
 
         fab.setOnClickListener(v -> {
             String text = editText.getText().toString().trim();
             if (!text.isEmpty()) {
-                taskList.add(new Task(text));
+                taskViewModel.insertTask(new Task(text));
                 taskAdapter.notifyItemInserted(taskList.size() - 1);
                 editText.setText("");
                 //Toast.makeText(this, "Tarefa adicionada !!!", Toast.LENGTH_SHORT).show();
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnIte
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 String text = editText.getText().toString().trim();
                 if (!text.isEmpty()) {
-                    taskList.add(new Task(text));
+                    taskViewModel.insertTask(new Task(text));
                     taskAdapter.notifyItemInserted(taskList.size() - 1);
                     editText.setText("");
                     Toast.makeText(this, "Tarefa adicionada !!!", Toast.LENGTH_SHORT).show();

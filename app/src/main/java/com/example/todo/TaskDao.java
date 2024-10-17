@@ -18,6 +18,6 @@ public interface TaskDao {
     @Delete
     void deleteTask(Task task);
 
-    @Query("Select * FROM task")
+    @Query("SELECT * FROM task")
     LiveData<List<Task>> getAllTasks();
 }
