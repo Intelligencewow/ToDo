@@ -3,35 +3,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="80dp"
+    android:layout_marginBottom="15dp">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        app:cardCornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:id="@+id/taskCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/taskTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Organize your workspace"/>
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:maxLength="30"
+                android:text="Organize your " />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/taskDeleteButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/red"
+                android:padding="15dp"
+                app:cornerRadius="50dp"
+                app:icon="@drawable/delete_24dp_e8eaed"
+
+                app:iconTint="#FFC9CE" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
